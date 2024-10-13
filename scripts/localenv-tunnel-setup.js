@@ -66,11 +66,24 @@ async function connect() {
 connect()
 
 process.on('SIGINT', async function () {
-  console.log('Tunnels are closing...')
+  console.log('Received SIGINT. Tunnels are closing...');
 
-  // clean the env variables as other urls will be generated at next run
-  await writeEnvs({
-    ILP_ADDRESS: envs.ILP_ADDRESS
-  })
-  process.exit()
-})
+  try {
+    // Clean the environment variables as other URLs will be generated at next run
+    await writeEnvs({
+      ILP_ADDRESS: envs.ILP_ADDRESS
+    });
+
+    console.log('Environment variables cleaned up successfully.');
+
+    // Perform any additional cleanup tasks here if necessary, such as closing open connections
+    // await closeConnections(); // Example for closing DB or network connections
+
+    console.log('All resources have been released. Exiting the process.');
+  } catch (error) {
+    console.error('Error occurred during shutdown:', error);
+  } finally {
+    process.exit(0); // Ensure process exits cleanly with success code
+  }
+});
+)
